@@ -73,6 +73,8 @@
       :is-wireframe="isWireframe"
       :light="isLight"
       :preview-url="originalPath"
+      @frame-update="frameNumber => $emit('frame-update', frameNumber)"
+      @play-ended="$emit('play-ended')"
       v-if="is3DModel"
     />
 

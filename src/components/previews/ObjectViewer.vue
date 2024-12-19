@@ -34,9 +34,21 @@ export default {
       default: null,
       type: String
     },
+    isRepeating: {
+      type: Boolean,
+      default: false
+    },
     light: {
       default: false,
       type: Boolean
+    },
+    currentFrame: {
+      type: Number,
+      default: 0
+    },
+    nbFrames: {
+      type: Number,
+      default: 0
     },
     readOnly: {
       default: false,
@@ -56,6 +68,14 @@ export default {
     isWireframe: {
       default: false,
       type: Boolean
+    }
+  },
+
+  emits: ['frame-update', 'play-ended', 'video-end'],
+
+  computed: {
+    model() {
+      return this.$event.target.model
     }
   },
 
@@ -88,6 +108,55 @@ export default {
           material.emissiveMap = null
           material.envMapIntensity = 0
         })
+      }
+    },
+
+    play() {
+      if (
+        !this.isPlaying &&
+        this.videoDuration === this.model.currentTime &&
+        this.name.indexOf('comparison') < 0
+      ) {
+        this.setCurrentTime(0)
+      }
+      this.model.play()
+      if (this.name.indexOf('comparison') < 0) {
+        this.runEmitTimeUpdateLoop()
+      }
+    },
+
+    pause() {
+      this.model.pause()
+      clearInterval(this.$options.playLoop)
+      this.model.currentTime = this.currentFrame * this.frameDuration
+      this.$emit('frame-update', this.currentFrame)
+    },
+
+    goPreviousFrame() {
+      const nextFrame = this.currentFrame - 1
+      if (nextFrame < 0) return
+      this.model.currentTime = nextFrame * this.frameDuration + 0.001
+      this.$emit('frame-update', nextFrame)
+      return nextFrame
+    },
+
+    goNextFrame() {
+      const nextFrame = this.currentFrame + 1
+      if (nextFrame >= this.nbFrames) return
+      this.model.currentTime = nextFrame * this.frameDuration + 0.001
+      this.$emit('frame-update', nextFrame)
+      return nextFrame
+    },
+
+    onVideoEnd() {
+      this.isPlaying = false
+      clearInterval(this.$options.playLoop)
+      if (this.isRepeating) {
+        this.$emit('video-end')
+        this.model.currentTime = 0
+        this.play()
+      } else {
+        this.$emit('play-ended')
       }
     }
   }
