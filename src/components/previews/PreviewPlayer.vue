@@ -125,11 +125,11 @@
         @start-scrub="$refs['button-bar'].classList.add('unselectable')"
         @end-scrub="$refs['button-bar'].classList.remove('unselectable')"
         @progress-changed="onProgressChanged"
-        v-show="isMovie"
+        v-show="isMovie || is3DModel"
       />
 
       <div class="buttons flexrow pull-bottom" ref="buttons">
-        <div class="left flexrow" v-if="isMovie || isSound">
+        <div class="left flexrow" v-if="isMovie || isSound || is3DModel">
           <button-simple
             class="flexrow-item"
             :title="$t('playlists.actions.play')"
@@ -146,7 +146,7 @@
           />
         </div>
 
-        <div class="left flexrow" v-if="isMovie">
+        <div class="left flexrow" v-if="isMovie || is3DModel">
           <button-simple
             :active="isRepeating"
             :title="$t('playlists.actions.looping')"
@@ -164,20 +164,22 @@
             v-if="(!light || fullScreen) && isMovie"
           />
 
-          <button-simple
-            class="flexrow-item"
-            :title="$t('playlists.actions.unmute')"
-            icon="soundoff"
-            @click="onToggleSoundClicked"
-            v-if="isMuted"
-          />
-          <button-simple
-            class="flexrow-item"
-            :title="$t('playlists.actions.mute')"
-            icon="soundon"
-            @click="onToggleSoundClicked"
-            v-else
-          />
+          <div class="left flexrow" v-if="!is3DModel">
+            <button-simple
+              class="flexrow-item"
+              :title="$t('playlists.actions.unmute')"
+              icon="soundoff"
+              @click="onToggleSoundClicked"
+              v-if="isMuted"
+            />
+            <button-simple
+              class="flexrow-item"
+              :title="$t('playlists.actions.mute')"
+              icon="soundon"
+              @click="onToggleSoundClicked"
+              v-else
+            />
+          </div>
 
           <span
             class="flexrow-item time-indicator"

@@ -64,15 +64,21 @@
     />
 
     <object-viewer
+      ref="model-viewer"
       class="model-viewer"
+      :big="isBig"
       :background-url="backgroundUrl"
       :default-height="defaultHeight"
       :empty="!is3DModel"
       :full-screen="isFullScreen"
       :is-environment-skybox="isEnvironmentSkybox"
       :is-wireframe="isWireframe"
+      :is-repeating="isRepeating"
       :light="isLight"
+      :current-frame="currentFrame"
+      :nb-frames="nbFrames"
       :preview-url="originalPath"
+      @duration-changed="duration => $emit('duration-changed', duration)"
       @frame-update="frameNumber => $emit('frame-update', frameNumber)"
       @play-ended="$emit('play-ended')"
       v-if="is3DModel"
@@ -232,6 +238,10 @@ export default {
       return this.$refs['sound-viewer']
     },
 
+    objectViewer() {
+      return this.$refs['model-viewer']
+    },
+  
     //  Utils
 
     backgroundUrl() {
@@ -351,6 +361,9 @@ export default {
       if (this.isSound) {
         this.soundViewer.play()
       }
+      if (this.is3DModel) {
+        this.objectViewer.play()
+      }
     },
 
     pause() {
@@ -359,13 +372,22 @@ export default {
       if (this.isSound) {
         this.soundViewer.pause()
       }
+      if (this.is3DModel) {
+        this.objectViewer.pause()
+      }
     },
 
     goPreviousFrame() {
+      if (this.is3DModel) {
+        return this.objectViewer.goPreviousFrame()
+      }
       return this.videoViewer.goPreviousFrame()
     },
 
     goNextFrame() {
+      if (this.is3DModel) {
+        return this.objectViewer.goNextFrame()
+      }
       return this.videoViewer.goNextFrame()
     },
 
@@ -403,7 +425,11 @@ export default {
     },
 
     setCurrentFrame(frameNumber) {
-      this.videoViewer.setCurrentFrame(frameNumber)
+      if (this.is3DModel) {
+        this.objectViewer.setCurrentFrame(frameNumber)
+      } else {
+        this.videoViewer.setCurrentFrame(frameNumber)
+      }
     },
 
     onPictureSizeChanged(dimensions) {
@@ -418,10 +444,17 @@ export default {
 
     // To use when you don't want to handle back pressure and rounding
     setCurrentTimeRaw(time) {
-      this.videoViewer.setCurrentTimeRaw(time)
+      if (this.is3DModel) {
+        this.objectViewer.setCurrentTimeRaw(time)
+      } else {
+        this.videoViewer.setCurrentTimeRaw(time)
+      }
     },
 
     getCurrentTimeRaw() {
+      if (this.is3DModel) {
+        return this.objectViewer.currentTimeRaw
+      }
       return this.isMovie ? this.videoViewer.currentTimeRaw : 0
     },
 
