@@ -241,7 +241,7 @@ export default {
     objectViewer() {
       return this.$refs['model-viewer']
     },
-  
+
     //  Utils
 
     backgroundUrl() {

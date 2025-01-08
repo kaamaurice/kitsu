@@ -91,11 +91,7 @@ export default {
     }
   },
 
-  emits: [
-    'duration-changed',
-    'frame-update',
-    'play-ended'
-  ],
+  emits: ['duration-changed', 'frame-update', 'play-ended'],
 
   computed: {
     ...mapGetters(['currentProduction']),
@@ -103,7 +99,7 @@ export default {
     model() {
       return this.$refs.model
     },
-  
+
     fps() {
       return parseFloat(this.currentProduction?.fps) || 30
     },
@@ -119,7 +115,7 @@ export default {
 
   methods: {
     formatFrame,
-  
+
     /**
      * Create a wireframe variant of each material of a 3D model
      * @param {Model} model - model from model-viewer component
@@ -209,7 +205,7 @@ export default {
       if (!this.isPlaying && this.videoDuration === this.model.currentTime) {
         this.setCurrentTime(0)
       }
-      this.model.play({repetitions: 1})
+      this.model.play({ repetitions: 1 })
       this.runEmitTimeUpdateLoop()
     },
 
